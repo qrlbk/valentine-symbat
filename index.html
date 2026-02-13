@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symbat — February 14</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="bg__img"></div>
+    <div class="bg__overlay"></div>
+    <div class="bg__parchment" aria-hidden="true"></div>
+    <div class="bg__vignette"></div>
+    <div class="bg__particles" aria-hidden="true"></div>
+    <div class="bg__grain"></div>
+  </div>
+
+  <div class="candles" aria-hidden="true">
+    <div class="candle candle--1">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+    <div class="candle candle--2">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+    <div class="candle candle--3">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+    <div class="candle candle--4">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+    <div class="candle candle--5">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+    <div class="candle candle--6">
+      <span class="candle__flame"></span>
+      <span class="candle__body"></span>
+      <span class="candle__base"></span>
+    </div>
+  </div>
+
+  <div class="page">
+    <section id="screen1" class="screen screen--active">
+      <div class="card card--ask">
+        <div class="card__seal" aria-hidden="true">
+          <svg class="card__wand" viewBox="0 0 24 72" xmlns="http://www.w3.org/2000/svg">
+            <path class="card__wand-path" d="M10 70 L9 52 Q11 48 10 35 L11 12 L12 2 L13 12 L14 35 Q15 48 13 52 L14 70 Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <h1 class="card__title">Symbat, will you accept this bouquet?</h1>
+        <p class="card__subtitle">Will you accept this magical bouquet?</p>
+        <div class="buttons-wrap">
+          <button type="button" id="btnYes" class="btn btn--yes">Yes</button>
+          <div class="btn-no-wrap" id="btnNoWrap">
+            <span class="btn-no-wing btn-no-wing--l" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32"><path class="wing-path" d="M12 12 Q 2 8 2 12 Q 2 16 12 12" fill="none" stroke="#b8860b" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <button type="button" id="btnNo" class="btn btn--no">No</button>
+            <span class="btn-no-wing btn-no-wing--r" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32"><path class="wing-path" d="M12 12 Q 22 8 22 12 Q 22 16 12 12" fill="none" stroke="#b8860b" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="sparkles" aria-hidden="true">
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+      </div>
+    </section>
+
+    <section id="screen2" class="screen">
+      <div class="card card--message">
+        <div class="card__seal" aria-hidden="true">
+          <svg class="card__wand" viewBox="0 0 24 72" xmlns="http://www.w3.org/2000/svg">
+            <path class="card__wand-path" d="M10 70 L9 52 Q11 48 10 35 L11 12 L12 2 L13 12 L14 35 Q15 48 13 52 L14 70 Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2 class="card__title">Symbat, you're like magic to me</h2>
+        <p class="card__text">
+          On this day I want to say: you make my world brighter, like a spell.
+          May this bouquet remind you that you're special — and not only on February 14.
+        </p>
+        <p class="card__sign">With love</p>
+      </div>
+      <div class="sparkles" aria-hidden="true">
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+      </div>
+    </section>
+  </div>
+  <div class="letter-layer" id="letterLayer" aria-hidden="true"></div>
+  <audio id="bgMusic" loop preload="auto" aria-label="Background music">
+    <source src="assets/45767.mp3" type="audio/mpeg">
+  </audio>
+  <button type="button" id="btnMusic" class="btn-music" aria-label="Play music" title="Включить музыку">♪</button>
+  <script src="script.js"></script>
+</body>
+</html>
