@@ -10,14 +10,16 @@
 
 /* Reset & base */
 *, *::before, *::after { box-sizing: border-box; }
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 16px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: calc(100vh + env(safe-area-inset-bottom, 0));
   font-family: 'Cormorant Garamond', Georgia, serif;
   color: #ebe4d9;
   overflow-x: hidden;
   position: relative;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* ========== Background — deep magical (purple / indigo + gold) ========== */
@@ -182,6 +184,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  padding: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
 }
 
 /* Screens */
@@ -192,6 +195,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  padding: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
@@ -471,26 +475,84 @@ body {
   50% { opacity: 0.9; transform: scale(1.3); }
 }
 
+/* Tablet and small desktop */
+@media (max-width: 768px) {
+  .page,
+  .screen {
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  }
+  .card {
+    max-width: min(32rem, calc(100vw - 2rem));
+    padding: 2rem 1.5rem;
+  }
+  .candle--5,
+  .candle--6 { opacity: 0.5; }
+}
+
+/* Phone */
 @media (max-width: 480px) {
   .page,
-  .screen { padding: 1rem; }
+  .screen {
+    padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  }
   .card {
-    padding: 1.75rem 1.35rem;
+    padding: 1.5rem 1.1rem;
+    max-width: calc(100vw - 1.5rem);
   }
   .card__seal { margin-bottom: 0.75rem; }
   .card__wand {
     width: 1rem;
     height: 3rem;
   }
-  .card__subtitle { margin-bottom: 1.5rem; }
-  .btn { font-size: 1.05rem; padding: 0.7rem 1.5rem; }
-  .card__title { letter-spacing: 0.02em; }
+  .card__title {
+    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+    letter-spacing: 0.02em;
+  }
+  .card__subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .card__text { font-size: 1.05rem; line-height: 1.65; }
+  .card__sign { font-size: 1.1rem; }
+  .buttons-wrap {
+    gap: 0.75rem;
+    min-height: 3.5rem;
+  }
+  .btn {
+    font-size: 1.05rem;
+    padding: 0.75rem 1.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-no-wing svg { width: 28px; height: 28px; }
+  .btn--no { min-width: 44px; }
+  .sparkle { width: 4px; height: 4px; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .card { padding: 1.25rem 0.9rem; }
+  .card__title { font-size: 1.2rem; }
+  .card__subtitle { font-size: 0.95rem; margin-bottom: 1.25rem; }
+  .card__text { font-size: 1rem; }
+  .btn { font-size: 1rem; padding: 0.65rem 1.25rem; }
+}
+
+/* Candles: hide part on small screens to reduce clutter and improve performance */
+@media (max-width: 480px) {
+  .candle--3,
+  .candle--4,
+  .candle--5,
+  .candle--6 { display: none; }
+  .candle--1 { left: 10%; top: 15%; }
+  .candle--2 { left: 85%; top: 18%; }
 }
 
 .btn-music {
   position: fixed;
-  bottom: 0.75rem;
-  left: 0.75rem;
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  left: max(0.75rem, env(safe-area-inset-left));
   z-index: 5;
   width: 2.75rem;
   height: 2.75rem;
@@ -503,8 +565,18 @@ body {
   opacity: 1;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.35), 0 2px 8px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn-music:hover {
   transform: scale(1.08);
   box-shadow: 0 0 18px rgba(212, 175, 55, 0.5), 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 480px) {
+  .btn-music {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.4rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    left: max(0.5rem, env(safe-area-inset-left));
+  }
 }

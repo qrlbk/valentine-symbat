@@ -6,8 +6,12 @@
   var btnNoWrap = document.getElementById('btnNoWrap');
   var letterLayer = document.getElementById('letterLayer');
 
-  var padding = 24;
-  var letterPadding = 16;
+  function getPadding() {
+    return window.innerWidth <= 480 ? 16 : 24;
+  }
+  function getLetterPadding() {
+    return window.innerWidth <= 480 ? 12 : 16;
+  }
   var letters = [];
   var animationFrameId = null;
   var letterSpeed = 0.38;
@@ -139,7 +143,7 @@
   function getBounds() {
     var w = window.innerWidth;
     var h = window.innerHeight;
-    return { w: w, h: h, pad: letterPadding };
+    return { w: w, h: h, pad: getLetterPadding() };
   }
 
   function randomPositionForLetter(home) {
@@ -268,19 +272,65 @@
   }
 
   function placeNoRandomly() {
-    if (!btnNoWrap) return;
+    if (!btnNoWrap || !btnYes) return;
     var w = window.innerWidth;
     var h = window.innerHeight;
     var sizeW = btnNoWrap.offsetWidth;
     var sizeH = btnNoWrap.offsetHeight;
-    var minLeft = padding;
-    var maxLeft = w - sizeW - padding;
-    var minTop = padding;
-    var maxTop = h - sizeH - padding;
+    var pad = getPadding();
+    var gap = 12; /* minimum gap between Yes and No */
+    var yesR = btnYes.getBoundingClientRect();
+    var yesLeft = yesR.left - gap;
+    var yesTop = yesR.top - gap;
+    var yesRight = yesR.right + gap;
+    var yesBottom = yesR.bottom + gap;
+    var minLeft = pad;
+    var maxLeft = w - sizeW - pad;
+    var minTop = pad;
+    var maxTop = h - sizeH - pad;
     if (maxLeft < minLeft) maxLeft = minLeft;
     if (maxTop < minTop) maxTop = minTop;
-    var left = minLeft + Math.random() * (maxLeft - minLeft);
-    var top = minTop + Math.random() * (maxTop - minTop);
+    var left, top;
+    var tries = 0;
+    var maxTries = 80;
+    do {
+      left = minLeft + Math.random() * (maxLeft - minLeft);
+      top = minTop + Math.random() * (maxTop - minTop);
+      var noRight = left + sizeW;
+      var noBottom = top + sizeH;
+      var overlaps = !(noRight < yesLeft || left > yesRight || noBottom < yesTop || top > yesBottom);
+      if (!overlaps) break;
+      tries++;
+    } while (tries < maxTries);
+    if (tries >= maxTries) {
+      /* push No away from Yes: place on the opposite side of the screen */
+      var yesCenterX = (yesR.left + yesR.right) / 2;
+      if (yesCenterX < w / 2) {
+        left = Math.max(pad, w - sizeW - pad - (w * 0.15));
+      } else {
+        left = Math.min(maxLeft, pad + w * 0.15);
+      }
+      top = minTop + Math.random() * (maxTop - minTop);
+    }
+    btnNoWrap.style.left = left + 'px';
+    btnNoWrap.style.top = top + 'px';
+  }
+
+  function placeNoNextToYes() {
+    if (!btnNoWrap || !btnYes) return;
+    var pad = getPadding();
+    var gap = 10;
+    var yesR = btnYes.getBoundingClientRect();
+    var sizeW = btnNoWrap.offsetWidth;
+    var sizeH = btnNoWrap.offsetHeight;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var left = yesR.right + gap;
+    var top = yesR.top + (yesR.height - sizeH) / 2;
+    if (left + sizeW > w - pad) left = yesR.left - gap - sizeW;
+    if (left < pad) left = pad;
+    if (top < pad) top = pad;
+    if (top + sizeH > h - pad) top = h - sizeH - pad;
     btnNoWrap.style.left = left + 'px';
     btnNoWrap.style.top = top + 'px';
   }
@@ -306,14 +356,19 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      initMessageLettersAndStartFlying();
-      setTimeout(function () { startAmbient(); }, 300);
-    });
-  } else {
+  function initFirstScreen() {
     initMessageLettersAndStartFlying();
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        placeNoNextToYes();
+      });
+    });
     setTimeout(function () { startAmbient(); }, 300);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFirstScreen);
+  } else {
+    initFirstScreen();
   }
 
   btnYes.addEventListener('click', function () {
@@ -328,29 +383,30 @@
   btnNoWrap.addEventListener('mouseenter', escapeNo);
   btnNoWrap.addEventListener('mousemove', escapeNo);
 
-  document.addEventListener('touchstart', function (e) {
-    if (!screen1.classList.contains('screen--active') || !e.touches.length) return;
-    var touch = e.touches[0];
+  function getTouchRadius() {
+    return window.innerWidth <= 480 ? 80 : 100;
+  }
+  function isTouchNearNo(touch) {
+    if (!btnNoWrap || !touch) return false;
     var br = btnNoWrap.getBoundingClientRect();
     var cx = br.left + br.width / 2;
     var cy = br.top + br.height / 2;
     var dx = touch.clientX - cx;
     var dy = touch.clientY - cy;
-    if (Math.sqrt(dx * dx + dy * dy) < 100) placeNoRandomly();
+    return Math.sqrt(dx * dx + dy * dy) < getTouchRadius();
+  }
+  document.addEventListener('touchstart', function (e) {
+    if (!screen1.classList.contains('screen--active') || !e.touches.length) return;
+    if (isTouchNearNo(e.touches[0])) placeNoRandomly();
   }, { passive: true });
 
   document.addEventListener('touchmove', function (e) {
     if (!screen1.classList.contains('screen--active') || !e.touches.length) return;
-    var touch = e.touches[0];
-    var br = btnNoWrap.getBoundingClientRect();
-    var cx = br.left + br.width / 2;
-    var cy = br.top + br.height / 2;
-    var dx = touch.clientX - cx;
-    var dy = touch.clientY - cy;
-    if (Math.sqrt(dx * dx + dy * dy) < 100) placeNoRandomly();
+    if (isTouchNearNo(e.touches[0])) placeNoRandomly();
   }, { passive: true });
 
   window.addEventListener('resize', function () {
+    var pad = getPadding();
     if (screen1.classList.contains('screen--active') && btnNoWrap) {
       var left = parseInt(btnNoWrap.style.left, 10);
       var top = parseInt(btnNoWrap.style.top, 10);
@@ -359,20 +415,21 @@
         var h = window.innerHeight;
         var sizeW = btnNoWrap.offsetWidth;
         var sizeH = btnNoWrap.offsetHeight;
-        if (left < padding || top < padding || left + sizeW > w - padding || top + sizeH > h - padding) {
-          placeNoRandomly();
+        if (left < pad || top < pad || left + sizeW > w - pad || top + sizeH > h - pad) {
+          placeNoNextToYes();
         }
       }
     }
     if (screen1.classList.contains('screen--active') && letters.length) {
       var w = window.innerWidth;
       var h = window.innerHeight;
+      var letterPad = getLetterPadding();
       for (var i = 0; i < letters.length; i++) {
         var a = letters[i];
-        if (a.x < letterPadding) a.x = letterPadding;
-        if (a.y < letterPadding) a.y = letterPadding;
-        if (a.x + a.home.width > w - letterPadding) a.x = w - letterPadding - a.home.width;
-        if (a.y + a.home.height > h - letterPadding) a.y = h - letterPadding - a.home.height;
+        if (a.x < letterPad) a.x = letterPad;
+        if (a.y < letterPad) a.y = letterPad;
+        if (a.x + a.home.width > w - letterPad) a.x = w - letterPad - a.home.width;
+        if (a.y + a.home.height > h - letterPad) a.y = h - letterPad - a.home.height;
         a.el.style.left = a.x + 'px';
         a.el.style.top = a.y + 'px';
       }
